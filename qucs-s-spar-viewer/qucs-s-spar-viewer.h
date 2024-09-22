@@ -50,6 +50,7 @@ class Qucs_S_SPAR_Viewer : public QMainWindow
   void slotQuit();
   void slotSave();
   void slotSaveAs();
+  void slotLoadSession();
 
   void addFile();
   void addFiles(QStringList);

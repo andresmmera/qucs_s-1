@@ -51,6 +51,10 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   fileQuit->setShortcut(QKeySequence::Quit);
   connect(fileQuit, SIGNAL(triggered(bool)), SLOT(slotQuit()));
 
+  QAction *fileOpenSession = new QAction(tr("&Open session file"), this);
+  fileOpenSession->setShortcut(QKeySequence::Open);
+  connect(fileOpenSession, SIGNAL(triggered(bool)), SLOT(slotLoadSession()));
+
   QAction *fileSaveAsSession = new QAction(tr("&Save session as ..."), this);
   fileSaveAsSession->setShortcut(QKeySequence::SaveAs);
   connect(fileSaveAsSession, SIGNAL(triggered(bool)), SLOT(slotSaveAs()));
@@ -2780,4 +2784,13 @@ bool Qucs_S_SPAR_Viewer::save()
 
   file.close();
   return true;
+}
+
+
+void Qucs_S_SPAR_Viewer::slotLoadSession()
+{
+  QString fileName = QFileDialog::getOpenFileName(this,
+                                                  tr("Open S-parameter Viewer Session"),
+                                                  QDir::homePath(),
+                                                  tr("Qucs-S snp viewer session (*.spar);"));
 }
