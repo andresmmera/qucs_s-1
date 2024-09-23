@@ -60,7 +60,7 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   connect(fileSaveAsSession, SIGNAL(triggered(bool)), SLOT(slotSaveAs()));
 
   QAction *fileSaveSession = new QAction(tr("&Save session"), this);
-  fileSaveSession->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+  fileSaveSession->setShortcut(QKeySequence::Save);
   connect(fileSaveSession, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
   fileMenu->addAction(fileSaveSession);
@@ -148,7 +148,6 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   dockChart->setWidget(chartView);
   dockChart->setAllowedAreas(Qt::AllDockWidgetAreas);
   addDockWidget(Qt::LeftDockWidgetArea, dockChart);
-
 
 
   // These are two maximum markers to find the lowest and the highest frequency in the data samples.
@@ -2617,10 +2616,19 @@ void Qucs_S_SPAR_Viewer::slotSave()
 
 void Qucs_S_SPAR_Viewer::slotSaveAs()
 {
+  if (datasets.isEmpty()){
+    // Nothing to save
+    QMessageBox::information(
+        this,
+        tr("Error"),
+        tr("Nothing to save: No data was loaded.") );
+    return;
+  }
+
   // Get the path to save
   savepath = QFileDialog::getSaveFileName(this,
                                               tr("Save session"),
-                                              "ViewerSession.spar",
+                                              QDir::homePath() + "/ViewerSession.spar",
                                               tr("Qucs-S snp viewer session (*.spar);"));
 
   // If the user decides not to enter a path, then return.
@@ -2632,6 +2640,14 @@ void Qucs_S_SPAR_Viewer::slotSaveAs()
 
 bool Qucs_S_SPAR_Viewer::save()
 {
+  if (datasets.isEmpty()){
+    // Nothing to save
+    QMessageBox::information(
+        this,
+        tr("Error"),
+        tr("Nothing to save: No data was loaded.") );
+    return false;
+  }
   QFile file(savepath);
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
@@ -2644,72 +2660,79 @@ bool Qucs_S_SPAR_Viewer::save()
 
   // ----------------------------------------------------------------
   // Save the markers
-  xmlWriter.writeStartElement("MARKERS");
-  double freq, value;
-  for (int i = 0; i < List_MarkerFreq.size(); i++)
-  {
-    freq = List_MarkerFreq[i]->value();
-    QString scale = List_MarkerScale[i]->currentText();
-    freq /= getFreqScale(scale);
-    xmlWriter.writeTextElement("Mkr", QString::number(freq));
+  if (List_MarkerFreq.size() != 0){
+    xmlWriter.writeStartElement("MARKERS");
+    double freq;
+    for (int i = 0; i < List_MarkerFreq.size(); i++)
+    {
+      freq = List_MarkerFreq[i]->value();
+      QString scale = List_MarkerScale[i]->currentText();
+      freq /= getFreqScale(scale);
+      xmlWriter.writeTextElement("Mkr", QString::number(freq));
+    }
+    xmlWriter.writeEndElement(); // Markers
   }
-  xmlWriter.writeEndElement(); // Markers
   // ----------------------------------------------------------------
   // Save the limits
-  xmlWriter.writeStartElement("LIMITS");
-  for (int i = 0; i < List_Limit_Start_Freq.size(); i++)
-  {
-    xmlWriter.writeStartElement("Limit");
+  if (List_Limit_Start_Freq.size() != 0){
+      double freq, value;
+      xmlWriter.writeStartElement("LIMITS");
+      for (int i = 0; i < List_Limit_Start_Freq.size(); i++)
+      {
+        xmlWriter.writeStartElement("Limit");
 
-    // fstart
-    freq = List_Limit_Start_Freq[i]->value();
-    QString scale = List_Limit_Start_Freq_Scale[i]->currentText();
-    freq /= getFreqScale(scale);
-    xmlWriter.writeTextElement("fstart", QString::number(freq));
+        // fstart
+        freq = List_Limit_Start_Freq[i]->value();
+        QString scale = List_Limit_Start_Freq_Scale[i]->currentText();
+        freq /= getFreqScale(scale);
+        xmlWriter.writeTextElement("fstart", QString::number(freq));
 
-    // Start value
-    value = List_Limit_Start_Value[i]->value();
-    xmlWriter.writeTextElement("val_start", QString::number(value));
+        // Start value
+        value = List_Limit_Start_Value[i]->value();
+        xmlWriter.writeTextElement("val_start", QString::number(value));
 
-    // fstop
-    freq = List_Limit_Stop_Freq[i]->value();
-    scale = List_Limit_Stop_Freq_Scale[i]->currentText();
-    freq /= getFreqScale(scale);
-    xmlWriter.writeTextElement("fstop", QString::number(freq));
+        // fstop
+        freq = List_Limit_Stop_Freq[i]->value();
+        scale = List_Limit_Stop_Freq_Scale[i]->currentText();
+        freq /= getFreqScale(scale);
+        xmlWriter.writeTextElement("fstop", QString::number(freq));
 
-    // Stop value
-    value = List_Limit_Stop_Value[i]->value();
-    xmlWriter.writeTextElement("val_stop", QString::number(value));
+        // Stop value
+        value = List_Limit_Stop_Value[i]->value();
+        xmlWriter.writeTextElement("val_stop", QString::number(value));
 
-    xmlWriter.writeEndElement(); // Limit
+        xmlWriter.writeEndElement(); // Limit
+      }
+      xmlWriter.writeEndElement(); // Limits
   }
-  xmlWriter.writeEndElement(); // Limits
   // ----------------------------------------------------------------
   // Save the traces displayed and their properties
-  xmlWriter.writeStartElement("DISPLAYED_TRACES");
-  QString trace_name, color, style;
-  int width;
-  for (int i = 0; i < List_TraceNames.size(); i++){
-    xmlWriter.writeStartElement("trace");
-    // Trace name
-    trace_name = List_TraceNames[i]->text();
-    xmlWriter.writeTextElement("trace_name", trace_name);
+  if (List_TraceNames.size() != 0){
+    xmlWriter.writeStartElement("DISPLAYED_TRACES");
+    QString trace_name, color, style;
+    int width;
+    for (int i = 0; i < List_TraceNames.size(); i++){
+      xmlWriter.writeStartElement("trace");
+      // Trace name
+      trace_name = List_TraceNames[i]->text();
+      xmlWriter.writeTextElement("trace_name", trace_name);
 
-    // Trace width
-    width = List_TraceWidth[i]->value();
-    xmlWriter.writeTextElement("trace_width", QString::number(width));
+      // Trace width
+      width = List_TraceWidth[i]->value();
+      xmlWriter.writeTextElement("trace_width", QString::number(width));
 
-    // Trace color
-    color = List_Trace_Color[i]->text();
-    xmlWriter.writeTextElement("trace_color", color);
+      // Trace color
+      color = List_Trace_Color[i]->text();
+      xmlWriter.writeTextElement("trace_color", color);
 
-    // Trace style
-    style = List_Trace_LineStyle[i]->currentText();
-    xmlWriter.writeTextElement("trace_style", style);
-    xmlWriter.writeEndElement(); // Trace
+      // Trace style
+      style = List_Trace_LineStyle[i]->currentText();
+      xmlWriter.writeTextElement("trace_style", style);
+      xmlWriter.writeEndElement(); // Trace
 
+    }
+    xmlWriter.writeEndElement(); // Displayed traces
   }
-  xmlWriter.writeEndElement(); // Displayed traces
   // ----------------------------------------------------------------
   // Save the axes settings
   xmlWriter.writeStartElement("AXES");
@@ -2745,9 +2768,6 @@ bool Qucs_S_SPAR_Viewer::save()
   xmlWriter.writeStartElement("lock_status");
   xmlWriter.writeTextElement("value", QString::number(lock_axis));
   xmlWriter.writeEndElement();
-
-
-
 
   xmlWriter.writeEndElement(); // Axes
   // ----------------------------------------------------------------
@@ -2793,4 +2813,29 @@ void Qucs_S_SPAR_Viewer::slotLoadSession()
                                                   tr("Open S-parameter Viewer Session"),
                                                   QDir::homePath(),
                                                   tr("Qucs-S snp viewer session (*.spar);"));
+
+ /* QXmlStreamReader xml(&fileName);
+  QString currentKey;
+  QList<double> currentList;
+
+  while (!xml.atEnd() && !xml.hasError()) {
+    QXmlStreamReader::TokenType token = xml.readNext();
+
+    if (token == QXmlStreamReader::StartElement) {
+      if (xml.name() == "item") {
+        currentKey = xml.attributes().value("key").toString();
+        currentList.clear();
+      } else if (xml.name() == "value") {
+        bool ok;
+        double value = xml.readElementText().toDouble(&ok);
+        if (ok) {
+          currentList.append(value);
+        }
+      }
+    } else if (token == QXmlStreamReader::EndElement) {
+      if (xml.name() == "item") {
+        result[currentKey] = currentList;
+      }
+    }
+  }*/
 }
