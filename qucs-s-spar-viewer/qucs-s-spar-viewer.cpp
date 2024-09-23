@@ -2683,9 +2683,11 @@ bool Qucs_S_SPAR_Viewer::save()
 
         // fstart
         freq = List_Limit_Start_Freq[i]->value();
-        QString scale = List_Limit_Start_Freq_Scale[i]->currentText();
-        freq /= getFreqScale(scale);
         xmlWriter.writeTextElement("fstart", QString::number(freq));
+
+        // fstart unit
+        QString fstart_unit = List_Limit_Start_Freq_Scale[i]->currentText();
+        xmlWriter.writeTextElement("fstart_unit", fstart_unit);
 
         // Start value
         value = List_Limit_Start_Value[i]->value();
@@ -2693,9 +2695,11 @@ bool Qucs_S_SPAR_Viewer::save()
 
         // fstop
         freq = List_Limit_Stop_Freq[i]->value();
-        scale = List_Limit_Stop_Freq_Scale[i]->currentText();
-        freq /= getFreqScale(scale);
         xmlWriter.writeTextElement("fstop", QString::number(freq));
+
+        // fstop unit
+        QString fstop_unit = List_Limit_Stop_Freq_Scale[i]->currentText();
+        xmlWriter.writeTextElement("fstop_unit", fstop_unit);
 
         // Stop value
         value = List_Limit_Stop_Value[i]->value();
@@ -2722,7 +2726,7 @@ bool Qucs_S_SPAR_Viewer::save()
       xmlWriter.writeTextElement("trace_width", QString::number(width));
 
       // Trace color
-      color = List_Trace_Color[i]->text();
+      color = List_Trace_Color[i]->palette().color(QPalette::Button).name();
       xmlWriter.writeTextElement("trace_color", color);
 
       // Trace style
@@ -2814,28 +2818,88 @@ void Qucs_S_SPAR_Viewer::slotLoadSession()
                                                   QDir::homePath(),
                                                   tr("Qucs-S snp viewer session (*.spar);"));
 
- /* QXmlStreamReader xml(&fileName);
-  QString currentKey;
-  QList<double> currentList;
+  QFile file(fileName);
+  QXmlStreamReader xml(&file);
+
+  // Trace properties
+  QList<int> trace_width;
+  QList<QString> trace_name, trace_color, trace_style;
+
+  // Limit data
+  QList<double> Limit_Start_Freq, Limit_Start_Val, Limit_Stop_Freq, Limit_Stop_Val;
+  QList<int> couple_limit;
+  QList<QString> Limit_Start_Freq_Unit, Limit_Stop_Freq_Unit;
 
   while (!xml.atEnd() && !xml.hasError()) {
+    // Read next element
     QXmlStreamReader::TokenType token = xml.readNext();
 
+           // If token is StartElement, check element name
     if (token == QXmlStreamReader::StartElement) {
-      if (xml.name() == "item") {
-        currentKey = xml.attributes().value("key").toString();
-        currentList.clear();
-      } else if (xml.name() == "value") {
-        bool ok;
-        double value = xml.readElementText().toDouble(&ok);
-        if (ok) {
-          currentList.append(value);
+      if (xml.name() == "trace") {
+        while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "trace")) {
+          xml.readNext();
+          if (xml.tokenType() == QXmlStreamReader::StartElement) {
+            if (xml.name() == "trace_name") {
+              trace_name.append(xml.readElementText());
+            } else if (xml.name() == "trace_width") {
+              trace_width.append(xml.readElementText().toInt());
+            } else if (xml.name() == "trace_color") {
+              trace_color.append(xml.readElementText());
+            } else if (xml.name() == "trace_style") {
+              trace_style.append(xml.readElementText());
+            }
+          }
+        }
+      } else if (xml.name().toString().contains("x-axis-min")) {
+        int x_axis_min = xml.readElementText().toInt();
+        QSpinBox_x_axis_min->setValue(x_axis_min);
+      } else if (xml.name().toString().contains("x-axis-max")) {
+        int x_axis_max = xml.readElementText().toInt();
+        QSpinBox_x_axis_min->setValue(x_axis_max);
+      } else if (xml.name().toString().contains("x-axis-div")) {
+        int x_axis_div = xml.readElementText().toInt();
+      } else if (xml.name().toString().contains("x-axis-scale")) {
+        QString x_axis_scale = xml.readElementText();
+      } else if (xml.name().toString().contains("y-axis-min")) {
+        int y_axis_min = xml.readElementText().toInt();
+        QSpinBox_y_axis_min->setValue(y_axis_min);
+      } else if (xml.name().toString().contains("y-axis-max")) {
+        int y_axis_max = xml.readElementText().toInt();
+        QSpinBox_y_axis_min->setValue(y_axis_max);
+      } else if (xml.name().toString().contains("y-axis-div")) {
+        int y_axis_div = xml.readElementText().toInt();
+      } else if (xml.name().toString().contains("lock_status")) {
+        int lock_status = xml.readElementText().toInt();
+      } else if (xml.name() == "Limit") {
+        while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "Limit")) {
+          xml.readNext();
+          if (xml.tokenType() == QXmlStreamReader::StartElement) {
+            if (xml.name() == "fstart") {
+              Limit_Start_Freq.append(xml.readElementText().toDouble());
+            } else if (xml.name() == "val_start") {
+              Limit_Start_Val.append(xml.readElementText().toDouble());
+            } else if (xml.name() == "fstop") {
+              Limit_Stop_Freq.append(xml.readElementText().toDouble());
+            } else if (xml.name() == "val_stop") {
+              Limit_Stop_Val.append(xml.readElementText().toDouble());
+            } else if (xml.name() == "fstart_unit") {
+              Limit_Start_Freq_Unit.append(xml.readElementText());
+            } else if (xml.name() == "fstop_unit") {
+              Limit_Stop_Freq_Unit.append(xml.readElementText());
+            }
+          }
         }
       }
-    } else if (token == QXmlStreamReader::EndElement) {
-      if (xml.name() == "item") {
-        result[currentKey] = currentList;
-      }
     }
-  }*/
+  }
+
+  if (xml.hasError()) {
+    qDebug() << "Error parsing XML: " << xml.errorString();
+  }
+
+  // Close the file
+  file.close();
+
+  return;
 }
