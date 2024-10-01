@@ -191,6 +191,7 @@ class Qucs_S_SPAR_Viewer : public QMainWindow
   // Save
   QString savepath;
   bool save();
+  void loadSession(QString);
 
   // Utilities
   void convert_MA_RI_to_dB(double *, double *, double *, double *, QString);

@@ -63,6 +63,7 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   fileSaveSession->setShortcut(QKeySequence::Save);
   connect(fileSaveSession, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
+  fileMenu->addAction(fileOpenSession);
   fileMenu->addAction(fileSaveSession);
   fileMenu->addAction(fileSaveAsSession);
   fileMenu->addAction(fileQuit);
@@ -2389,7 +2390,15 @@ void Qucs_S_SPAR_Viewer::dropEvent(QDropEvent *event)
     }
 
     if (!fileList.isEmpty()) {
-        addFiles(fileList);
+      // Check if this is a session file
+      if (fileList.size() == 1){
+        if (fileList.first().endsWith(".spar", Qt::CaseInsensitive)) {
+          // Then open it as a session settings file.
+          loadSession(fileList.first());
+        }
+      }
+
+      addFiles(fileList);
       this->activateWindow();
     }
 }
@@ -2657,6 +2666,7 @@ bool Qucs_S_SPAR_Viewer::save()
   QXmlStreamWriter xmlWriter(&file);
   xmlWriter.setAutoFormatting(true);
   xmlWriter.writeStartDocument();
+  xmlWriter.writeStartElement("DATA");//Top level
 
   // ----------------------------------------------------------------
   // Save the markers
@@ -2740,38 +2750,14 @@ bool Qucs_S_SPAR_Viewer::save()
   // ----------------------------------------------------------------
   // Save the axes settings
   xmlWriter.writeStartElement("AXES");
-
-  xmlWriter.writeStartElement("x-axis-min");
-  xmlWriter.writeTextElement("value", QString::number(QSpinBox_x_axis_min->value()));
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("x-axis-max");
-  xmlWriter.writeTextElement("value", QString::number(QSpinBox_x_axis_max->value()));
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("x-axis-div");
-  xmlWriter.writeTextElement("value", QComboBox_x_axis_div->currentText());
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("x-axis-scale");
-  xmlWriter.writeTextElement("value", QCombobox_x_axis_units->currentText());
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("y-axis-min");
-  xmlWriter.writeTextElement("value", QString::number(QSpinBox_y_axis_min->value()));
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("y-axis-max");
-  xmlWriter.writeTextElement("value", QString::number(QSpinBox_y_axis_max->value()));
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("y-axis-div");
-  xmlWriter.writeTextElement("value", QComboBox_y_axis_div->currentText());
-  xmlWriter.writeEndElement();
-
-  xmlWriter.writeStartElement("lock_status");
-  xmlWriter.writeTextElement("value", QString::number(lock_axis));
-  xmlWriter.writeEndElement();
+  xmlWriter.writeTextElement("x-axis-min", QString::number(QSpinBox_x_axis_min->value()));
+  xmlWriter.writeTextElement("x-axis-max", QString::number(QSpinBox_x_axis_max->value()));
+  xmlWriter.writeTextElement("x-axis-div", QComboBox_x_axis_div->currentText());
+  xmlWriter.writeTextElement("x-axis-scale", QCombobox_x_axis_units->currentText());
+  xmlWriter.writeTextElement("y-axis-min", QString::number(QSpinBox_y_axis_min->value()));
+  xmlWriter.writeTextElement("y-axis-max", QString::number(QSpinBox_y_axis_max->value()));
+  xmlWriter.writeTextElement("y-axis-div", QComboBox_y_axis_div->currentText());
+  xmlWriter.writeTextElement("lock_status", QString::number(lock_axis));
 
   xmlWriter.writeEndElement(); // Axes
   // ----------------------------------------------------------------
@@ -2804,6 +2790,7 @@ bool Qucs_S_SPAR_Viewer::save()
   // ----------------------------------------------------------------
 
 
+  xmlWriter.writeEndElement(); // Top level
   xmlWriter.writeEndDocument();
 
   file.close();
@@ -2818,14 +2805,26 @@ void Qucs_S_SPAR_Viewer::slotLoadSession()
                                                   QDir::homePath(),
                                                   tr("Qucs-S snp viewer session (*.spar);"));
 
-  QFile file(fileName);
+  loadSession(fileName);
+}
+
+
+void Qucs_S_SPAR_Viewer::loadSession(QString session_file)
+{
+  QFile file(session_file);
+
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    qDebug() << "Error opening file:" << file.errorString();
+    return;
+  }
+
   QXmlStreamReader xml(&file);
 
-  // Trace properties
+         // Trace properties
   QList<int> trace_width;
   QList<QString> trace_name, trace_color, trace_style;
 
-  // Limit data
+         // Limit data
   QList<double> Limit_Start_Freq, Limit_Start_Val, Limit_Stop_Freq, Limit_Stop_Val;
   QList<int> couple_limit;
   QList<QString> Limit_Start_Freq_Unit, Limit_Stop_Freq_Unit;
@@ -2871,6 +2870,11 @@ void Qucs_S_SPAR_Viewer::slotLoadSession()
         int y_axis_div = xml.readElementText().toInt();
       } else if (xml.name().toString().contains("lock_status")) {
         int lock_status = xml.readElementText().toInt();
+        if (lock_status == 1){
+          Lock_axis_settings_Button->setChecked(true);
+        } else{
+          Lock_axis_settings_Button->setChecked(false);
+        }
       } else if (xml.name() == "Limit") {
         while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "Limit")) {
           xml.readNext();
@@ -2890,6 +2894,19 @@ void Qucs_S_SPAR_Viewer::slotLoadSession()
             }
           }
         }
+      } else if (xml.name() == "file") {
+        xml.readNext();
+        while (!(xml.tokenType() == QXmlStreamReader::EndElement)){
+          QString filename = xml.readElementText();
+          xml.readNext();
+          if ((xml.tokenType() == QXmlStreamReader::StartElement) && (xml.name() == "trace")) {
+            QString tracename = xml.readElementText();
+            while (!(xml.tokenType() == QXmlStreamReader::EndElement)){
+              double value = xml.readElementText().toDouble();
+              datasets[filename][tracename].append(value);
+            }
+          }
+        }
       }
     }
   }
@@ -2898,8 +2915,10 @@ void Qucs_S_SPAR_Viewer::slotLoadSession()
     qDebug() << "Error parsing XML: " << xml.errorString();
   }
 
-  // Close the file
+         // Close the file
   file.close();
+
+         // Apply the settings and display traces
 
   return;
 }
