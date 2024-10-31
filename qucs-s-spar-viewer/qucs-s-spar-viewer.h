@@ -75,6 +75,7 @@ protected:
   void updatePlot();
   void updateTraces();
   void updateTracesCombo();
+  void updateFormatCombo();
 
   void changeTraceColor();
   void changeTraceLineStyle();
@@ -152,7 +153,7 @@ protected:
   QStringList frequency_units;
 
   // Trace management widgets
-  QComboBox *QCombobox_datasets, *QCombobox_traces;
+  QComboBox *QCombobox_datasets, *QCombobox_traces, *QCombobox_Format;
   QPushButton *Button_add_trace;
   QTableWidget *Traces_Widget;
 

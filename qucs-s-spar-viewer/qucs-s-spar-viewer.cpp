@@ -237,14 +237,14 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   SettingsGrid->addWidget(y_axis, 2, 0);
 
   QSpinBox_y_axis_min = new QDoubleSpinBox();
-  QSpinBox_y_axis_min->setMinimum(-150);
+  QSpinBox_y_axis_min->setMinimum(-1e4);
   QSpinBox_y_axis_min->setValue(-50);
   QSpinBox_y_axis_min->setDecimals(1);
   connect(QSpinBox_y_axis_min, SIGNAL(valueChanged(double)), SLOT(updatePlot()));
   SettingsGrid->addWidget(QSpinBox_y_axis_min, 2, 1);
 
   QSpinBox_y_axis_max = new QDoubleSpinBox();
-  QSpinBox_y_axis_max->setMinimum(-150);
+  QSpinBox_y_axis_max->setMinimum(-1e4);
   QSpinBox_y_axis_max->setValue(0);
   QSpinBox_y_axis_max->setDecimals(1);
   connect(QSpinBox_y_axis_max, SIGNAL(valueChanged(double)), SLOT(updatePlot()));
@@ -283,13 +283,6 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   QCombobox_y2_axis_units->addItem("dB");
   SettingsGrid->addWidget(QCombobox_y2_axis_units, 3, 4);*/
 
-  // Hide y2 axis (temporary)
-  y2_axis->hide();
-  QSpinBox_y2_axis_min->hide();
-  QSpinBox_y2_axis_max->hide();
-  QSpinBox_y2_axis_div->hide();
- // QCombobox_y2_axis_units->hide();
-
   // Lock axis settings button
   Lock_axis_settings_Button =  new QPushButton("Lock Axes");
   connect(Lock_axis_settings_Button, SIGNAL(clicked(bool)), SLOT(lock_unlock_axis_settings()));
@@ -310,9 +303,8 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
   QLabel *Traces_label = new QLabel("<b>Traces</b>");
   DatasetsGrid->addWidget(Traces_label, 0, 1, Qt::AlignCenter);
 
-  QLabel *empty_label = new QLabel("<b>Empty</b>");
-  DatasetsGrid->addWidget(empty_label, 0, 2, Qt::AlignCenter);
-  empty_label->hide();
+  QLabel *Format_label = new QLabel("<b>Format</b>");
+  DatasetsGrid->addWidget(Format_label, 0, 2, Qt::AlignCenter);
 
   QCombobox_datasets = new QComboBox();
   DatasetsGrid->addWidget(QCombobox_datasets, 1, 0);
@@ -322,6 +314,11 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
 
   QCombobox_traces = new QComboBox();
   DatasetsGrid->addWidget(QCombobox_traces, 1, 1);
+  connect(QCombobox_traces, SIGNAL(currentIndexChanged(int)), SLOT(updateFormatCombo())); // Each time the trace is changed it is needed to update the available formats
+
+
+  QCombobox_Format = new QComboBox();
+  DatasetsGrid->addWidget(QCombobox_Format, 1, 2);
 
   Button_add_trace = new QPushButton("Add trace");
   Button_add_trace->setStyleSheet("QPushButton {background-color: green;\
@@ -336,7 +333,7 @@ Qucs_S_SPAR_Viewer::Qucs_S_SPAR_Viewer()
                               }");
  connect(Button_add_trace, SIGNAL(clicked()), SLOT(addTrace())); // Connect button with the handler
 
-  DatasetsGrid->addWidget(Button_add_trace, 1, 2);
+  DatasetsGrid->addWidget(Button_add_trace, 1, 3);
 
   // Trace management
   // Titles
@@ -844,21 +841,21 @@ void Qucs_S_SPAR_Viewer::addFiles(QStringList fileNames)
 
     // Default behavior: If there's no more data loaded and a single S1P file is selected, then automatically plot S11
     if ((fileNames.length() == 1) && (fileNames.first().toLower().endsWith(".s1p")) && (datasets.size() == 1)){
-        this->addTrace(filename, QString("S11"), Qt::red);
+        this->addTrace(filename, QString("S11_dB"), Qt::red);
 
         adjust_x_axis_to_file(filename);
-        adjust_y_axis_to_trace(filename, "S11");
+        adjust_y_axis_to_trace(filename, QString("S11_dB"));
     }
 
     // Default behavior: If there's no more data loaded and a single S2P file is selected, then automatically plot S21, S11 and S22
     if ((fileNames.length() == 1) && (fileNames.first().toLower().endsWith(".s2p")) && (datasets.size() == 1)){
-        this->addTrace(filename, QString("S21"), Qt::red);
-        this->addTrace(filename, QString("S11"), Qt::blue);
-        this->addTrace(filename, QString("S22"), Qt::darkGreen);
+        this->addTrace(filename, QString("S21_dB"), Qt::red);
+        this->addTrace(filename, QString("S11_dB"), Qt::blue);
+        this->addTrace(filename, QString("S22_dB"), Qt::darkGreen);
 
         adjust_x_axis_to_file(filename);
-        adjust_y_axis_to_trace(filename, "S11");
-        adjust_y_axis_to_trace(filename, "S21");
+        adjust_y_axis_to_trace(filename, QString("S11_dB"));
+        adjust_y_axis_to_trace(filename, QString("S21_dB"));
     }
 
     // Default behaviour: When adding multiple S2P file, then show the S21 of all traces
@@ -877,8 +874,8 @@ void Qucs_S_SPAR_Viewer::addFiles(QStringList fileNames)
                 filename = filename.left(filename.lastIndexOf('.'));
                 // Pick a random color
                 QColor trace_color = QColor(QRandomGenerator::global()->bounded(256), QRandomGenerator::global()->bounded(256), QRandomGenerator::global()->bounded(256));
-                this->addTrace(filename, QString("S21"), trace_color);
-                adjust_y_axis_to_trace(filename, "S21");
+                this->addTrace(filename, QString("S21_dB"), trace_color);
+                adjust_y_axis_to_trace(filename, "S21_dB");
             }
             // Update the frequency setting to fit the last s2p file
             adjust_x_axis_to_file(filename);
@@ -1161,9 +1158,26 @@ double Qucs_S_SPAR_Viewer::getFreqScale(QString frequency_unit)
 
 void Qucs_S_SPAR_Viewer::addTrace()
 {
-    QString selected_dataset, selected_trace;
+    QString selected_dataset, selected_trace, selected_format;
     selected_dataset = this->QCombobox_datasets->currentText();
     selected_trace = this->QCombobox_traces->currentText();
+    selected_format = this->QCombobox_Format->currentText();
+
+    if (!selected_format.compare("dB")){
+      selected_trace.append("_dB");
+    } else {
+      if (!selected_format.compare("ang (deg)")){
+        selected_trace.append("_ang");
+      } else {
+        if (!selected_format.compare("Real (n.u.)")){
+          selected_trace.append("_re");
+        } else {
+          if (!selected_format.compare("Imag (n.u.)")){
+            selected_trace.append("_im");
+          }
+        }
+      }
+    }
 
     // Color settings
     QColor trace_color;
@@ -1334,7 +1348,37 @@ void Qucs_S_SPAR_Viewer::updateTracesCombo()
     }
 
     QCombobox_traces->addItems(traces);
+    updateFormatCombo();
 }
+
+// This function is used for setting the available traces depending on the selected trace
+void Qucs_S_SPAR_Viewer::updateFormatCombo()
+{
+  QCombobox_Format->clear();
+
+  QString current_trace = QCombobox_traces->currentText();
+  if (current_trace.isEmpty()) {
+    return; // No datasets loaded. This happens if the user had one single file and deleted it
+  }
+
+  QStringList available_formats;
+
+  QStringList dB_List; // Traces which can support natural units and dB/ang formats
+  dB_List.append("MAG");
+  dB_List.append("MSG");
+
+  if ((current_trace.startsWith("S")) || (dB_List.contains(current_trace))) {
+    available_formats.append("dB");
+    available_formats.append("ang (deg)");
+    available_formats.append("Real (n.u.)");
+    available_formats.append("Imag (n.u.)");
+  } else {
+    available_formats.append("n.u.");
+  }
+
+  QCombobox_Format->addItems(available_formats);
+}
+
 
 // This is the handler that is triggered when the user hits the button to change the color of a given trace
 void Qucs_S_SPAR_Viewer::changeTraceColor()
@@ -1601,9 +1645,6 @@ void Qucs_S_SPAR_Viewer::updateTraces()
         QString data_file = trace_name_parts[0];
         QString trace_file = trace_name_parts[1];
 
-        if (trace_file.at(0) == 'S'){
-            trace_file = trace_file + QString("_dB");
-        }
         if (trace_file == QString("|%1|").arg(QChar(0x0394))){
             trace_file = "delta";
         }
@@ -1864,9 +1905,6 @@ void Qucs_S_SPAR_Viewer::checkFreqSettingsLimits(QString filename, double& fmin,
 void Qucs_S_SPAR_Viewer::adjust_y_axis_to_trace(QString filename, QString tracename){
     qreal minX, maxX, minY, maxY;
 
-    if (tracename.at(0) == 'S'){
-        tracename = tracename + QString("_dB");
-    }
     if (tracename == QString("|%1|").arg(QChar(0x0394))){
         tracename = "delta";
     }
