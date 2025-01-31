@@ -84,7 +84,7 @@ X1 PLUS MINUS bulk cap_rfcmim l={l} w={w}
             SG13G2 Salicide resistor
         </Description>
         <Netlists>
-                <NgspiceNetlist value = 'Xrsil{PartCounter} gnd {nets} IHP_PDK_basic_components_rsil w={w} l={l} m=1'>
+                <NgspiceNetlist value = 'Xrsil{PartCounter} gnd {nets} IHP_PDK_basic_components_rsil w={w} l={l} m={m}'>
                         <Property name="LibraryInclude">
                         <![CDATA[
                                 .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_wcs
@@ -133,7 +133,7 @@ X1 P1 P2 rsil w={w} l={l} m={m}
             SG13G2 polysilicon unsalicided resistor
         </Description>
         <Netlists>
-                <NgspiceNetlist value = 'Xrppd{PartCounter} gnd {nets} IHP_PDK_basic_components_rppd w={w} l={l} m=2'>
+                <NgspiceNetlist value = 'Xrppd{PartCounter} gnd {nets} IHP_PDK_basic_components_rppd w={w} l={l} m={m}'>
                         <Property name="LibraryInclude">
                         <![CDATA[
                                 .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_wcs
