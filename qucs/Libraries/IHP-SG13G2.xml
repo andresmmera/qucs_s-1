@@ -5,18 +5,8 @@
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'Xcap_cmim{PartCounter} {nets} cap_cmim w={w} l={l} m=1'>
-                        <Property name="LibraryInclude">
-                        <![CDATA[
-                            .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerCAP.lib cap_typ
-                         ]]>
-                        </Property>
-                        <Property name="Subcircuit">
-                        <![CDATA[
-                        .SUBCKT IHP_PDK_basic_components_cap_cmim  gnd P1 P2  l=7.0u w=7.0u
-X1 P1 P2 cap_cmim l={l} w={w}
-.ENDS
-                         ]]>
-                        </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerCAP.lib cap_typ">
+                    </Include>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -45,11 +35,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
        </Description>
        <Netlists>
                <NgspiceNetlist value = 'Xcap_rfcmim{PartCounter} {nets} rfcmim w={w} l={l} m=1'>
-                       <Property name="LibraryInclude">
-                       <![CDATA[
-                           .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerCAP.lib cap_typ
-                        ]]>
-                       </Property>
+                   <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerCAP.lib cap_typ">
+                   </Include>
                </NgspiceNetlist>
        </Netlists>
        <Symbols>
@@ -78,11 +65,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'Xrsil{PartCounter} {nets} rsil w={w} l={l} m={m}'>
-                        <Property name="LibraryInclude">
-                        <![CDATA[
-                                .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ
-                         ]]>
-                        </Property>
+                        <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ">
+                        </Include>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -119,11 +103,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'Xrppd{PartCounter} {nets} rppd w={w} l={l} m={m} b={b}'>
-                        <Property name="LibraryInclude">
-                        <![CDATA[
-                                .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ
-                         ]]>
-                        </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ">
+                    </Include>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -160,11 +141,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'Xntap{PartCounter} {nets} ntap1'>
-                        <Property name="LibraryInclude">
-                        <![CDATA[
-                                .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ
-                         ]]>
-                        </Property>
+                        <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ">
+                        </Include>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -187,11 +165,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'Xptap{PartCounter} {nets} ptap1'>
-                        <Property name="LibraryInclude">
-                        <![CDATA[
-                                .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ
-                         ]]>
-                        </Property>
+                        <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ">
+                        </Include>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -214,11 +189,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'Xrhigh{PartCounter} {nets} rhigh w={w} l={l} m=1'>
-                        <Property name="LibraryInclude">
-                        <![CDATA[
-                                .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ
-                         ]]>
-                        </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ">
+                    </Include>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -256,16 +228,10 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xsg13_lv_nmos{PartCounter} {nets} sg13_lv_nmos w={w} l={l} ng={ng} m={m} as={as} ad={ad} pd={pd} ps={ps} trise={trise} z1={z1} z2={z2} wmin={wmin} rfmode={rfmode} pre_layout=1'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt
-                     ]]>
-                    </Property>
-                    <Property name="OSDI">
-                    <![CDATA[
-                    psp103_nqs.osdi
-                    ]]>
-                    </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt">
+                    </Include>
+                    <OSDI value="{PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/openvaf/psp103_nqs.osdi">
+                    </OSDI>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -343,16 +309,10 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xsg13_hv_nmos{PartCounter} {nets} sg13_hv_nmos w={w} l={l} ng={ng} m={m} as={as} ad={ad} pd={pd} ps={ps} trise={trise} z1={z1} z2={z2} wmin={wmin} rfmode={rfmode} pre_layout=1'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib mos_tt
-                     ]]>
-                    </Property>
-                    <Property name="OSDI">
-                    <![CDATA[
-                    psp103_nqs.osdi
-                    ]]>
-                    </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib mos_tt">
+                    </Include>
+                    <OSDI value="{PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/openvaf/psp103_nqs.osdi">
+                    </OSDI>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -430,16 +390,10 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xsg13_lv_pmos{PartCounter} {nets} sg13_lv_pmos w={w} l={l} ng={ng} m={m} as={as} ad={ad} pd={pd} ps={ps} trise={trise} z1={z1} z2={z2} wmin={wmin} rfmode={rfmode} pre_layout=1'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt
-                     ]]>
-                    </Property>
-                    <Property name="OSDI">
-                    <![CDATA[
-                    psp103_nqs.osdi
-                    ]]>
-                    </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt">
+                    </Include>
+                    <OSDI value="{PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/openvaf/psp103_nqs.osdi">
+                    </OSDI>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -517,16 +471,10 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xsg13_hv_pmos{PartCounter} {nets} sg13_hv_pmos w={w} l={l} ng={ng} m={m} as={as} ad={ad} pd={pd} ps={ps} trise={trise} z1={z1} z2={z2} wmin={wmin} rfmode={rfmode} pre_layout=1'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib mos_tt
-                     ]]>
-                    </Property>
-                    <Property name="OSDI">
-                    <![CDATA[
-                    psp103_nqs.osdi
-                    ]]>
-                    </Property>
+                <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib mos_tt">
+                </Include>
+                <OSDI value="{PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/openvaf/psp103_nqs.osdi">
+                </OSDI>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -604,11 +552,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xnpn13G{PartCounter} {nets} npn13G2 Nx={Nx} El={El}'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ
-                     ]]>
-                    </Property>
+                    <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ">
+                    </Include>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -649,19 +594,8 @@ X1 P1 P2 cap_cmim l={l} w={w}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xnpn13G2l{PartCounter} {nets} npn13G2l Nx={Nx} El={El}'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ
-                     ]]>
-                    </Property>
-                    <Property name="Subcircuit">
-                    <![CDATA[
-                    .SUBCKT IHP_PDK_nonlinear_components_npn13G2l  gnd c b e bn t Nx=1 El=1
-.INCLUDE   ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/sg13g2_hbt_mod.lib
-X1 c b e bn t  npn13G2l Nx={Nx} El={El}
-.ENDS
-                     ]]>
-                    </Property>
+                <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ">
+                </Include>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -702,11 +636,8 @@ X1 c b e bn t  npn13G2l Nx={Nx} El={El}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xnpn13G2v{PartCounter} {nets} npn13G2v Nx={Nx}'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .LIB ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ
-                     ]]>
-                    </Property>
+                <Include value=".LIB {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ">
+                </Include>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -743,16 +674,10 @@ X1 c b e bn t  npn13G2l Nx={Nx} El={El}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xdantenna{PartCounter} {nets} gnd IHP_PDK_nonlinear_components_dantenna w={w} l={l}'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .INCLUDE ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/diodes.lib
-                     ]]>
-                    </Property>
-                    <Property name="OSDI">
-                    <![CDATA[
-                    psp103_nqs.osdi
-                    ]]>
-                    </Property>
+                <Include value=".INCLUDE {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/diodes.lib">
+                </Include>
+                <OSDI value="{PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/openvaf/psp103_nqs.osdi">
+                </OSDI>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -782,16 +707,10 @@ X1 c b e bn t  npn13G2l Nx={Nx} El={El}
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'Xdpantenna{PartCounter} {nets} gnd dpantenna w={w} l={l}'>
-                    <Property name="LibraryInclude">
-                    <![CDATA[
-                        .INCLUDE ~/.qucs/IHP-Open-PDK-main/ihp-sg13g2/libs.tech/ngspice/models/diodes.lib
-                     ]]>
-                    </Property>
-                    <Property name="OSDI">
-                    <![CDATA[
-                    psp103_nqs.osdi
-                    ]]>
-                    </Property>
+                <Include value=".INCLUDE {PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/models/diodes.lib">
+                </Include>
+                <OSDI value="{PDK_ROOT}/ihp-sg13g2/libs.tech/ngspice/openvaf/psp103_nqs.osdi">
+                </OSDI>
             </NgspiceNetlist>
         </Netlists>
         <Symbols>
