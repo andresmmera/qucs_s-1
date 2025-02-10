@@ -2058,7 +2058,11 @@ QString Component::getValue(const Property* p) {
     return QString::number(evaluateExpression(p->Value));
   } else {
     // The value is a number stored as a string
-    return p->Value;
+    if (!p->Unit.isEmpty()){
+      return p->Value + p->Unit;
+    } else{
+      return p->Value;
+    }
   }
 }
 
