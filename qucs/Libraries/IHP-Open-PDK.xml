@@ -77,4 +77,42 @@
             </Parameter>
         </Parameters>
     </Component>
+    <Component name="ptap1" schematic_id = "R" show_name="true">
+        <Description>
+            SG13G2 substrate tap
+        </Description>
+        <Netlists>
+                <NgspiceNetlist value = 'XR{PartCounter} {nets} ptap1 R={R}'>
+                </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Lumped_Component_Symbols/Resistor.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="" default_value="0.78e-6" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="" default_value="0.78e-6" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="raspec" unit="" default_value="9.8e-10" show="false">
+                <Description>Resistance</Description>
+            </Parameter>
+            <Parameter name="rpspec" unit="" default_value="9.8e-4" show="false">
+                <Description>Resistance</Description>
+            </Parameter>
+            <Parameter name="area" unit="" default_value="w*l" show="false">
+                <Description>Resistance</Description>
+            </Parameter>
+            <Parameter name="perimeter" unit="" default_value="2*(w+l)" show="false">
+                <Description>Resistance</Description>
+            </Parameter>
+            <Parameter name="R" unit="" default_value="1/(1/(raspec/area) + 1/(rpspec/(perimeter)))" show="true">
+                <Description>Resistance</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
 </Library>
+
