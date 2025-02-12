@@ -27,13 +27,69 @@
             </Parameter>
         </Parameters>
     </Component>
+    <Component name="sg13_hv_nmos" schematic_id = "M" show_name="true">
+        <Description>
+            high voltage nmos
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XM{PartCounter} {nets} sg13_hv_nmos w={w} l={l} ng={ng} m={m}'>
+                </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Nonlinear_Components_Symbols/NMOS.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="1.0" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="0.13" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="ng" unit="" default_value="1" show="true">
+                <Description>Number of fingers</Description>
+            </Parameter>
+            <Parameter name="m" unit="" default_value="1" show="true">
+                <Description>Multiplier</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
     <Component name="sg13_lv_pmos" schematic_id = "M" show_name="true">
         <Description>
-            low voltage nmos
+            low voltage pmos
         </Description>
         <Netlists>
             <NgspiceNetlist value = 'XM{PartCounter} {nets} sg13_lv_pmos w={w} l={l} ng={ng} m={m}'>
                 </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Nonlinear_Components_Symbols/PMOS.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="1.0" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="0.13" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="ng" unit="" default_value="1" show="true">
+                <Description>Number of fingers</Description>
+            </Parameter>
+            <Parameter name="m" unit="" default_value="1" show="true">
+                <Description>Multiplier</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="sg13_hv_pmos" schematic_id = "M" show_name="true">
+        <Description>
+            high voltage pmos
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XM{PartCounter} {nets} sg13_hv_pmos w={w} l={l} ng={ng} m={m}'>
+            </NgspiceNetlist>
         </Netlists>
         <Symbols>
             <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
@@ -61,6 +117,28 @@
         </Description>
         <Netlists>
                 <NgspiceNetlist value = 'XD{PartCounter} {nets} dantenna w={w} l={l}'>
+                </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Nonlinear_Components_Symbols/Diode.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="0.78" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="0.78" show="true">
+                <Description>Length</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="dpantenna" schematic_id = "D" show_name="true">
+        <Description>
+            nwell diode
+        </Description>
+        <Netlists>
+                <NgspiceNetlist value = 'XD{PartCounter} {nets} dpantenna w={w} l={l}'>
                 </NgspiceNetlist>
         </Netlists>
         <Symbols>
@@ -111,6 +189,190 @@
             </Parameter>
             <Parameter name="R" unit="" default_value="1/(1/(raspec/area) + 1/(rpspec/(perimeter)))" show="true">
                 <Description>Resistance</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="rsil" schematic_id = "R" show_name="true">
+        <Description>
+            SG13G2 Salicide resistor
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XR{PartCounter} {nets} rsil w={w} l={l} b={b} m={m}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Lumped_Component_Symbols/Resistor.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="0.5e-6" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="0.5e-6" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="m" unit="" default_value="1" show="true">
+                <Description>multiplier</Description>
+            </Parameter>
+            <Parameter name="b" unit="" default_value="0" show="true">
+                <Description>Number of bends</Description>
+            </Parameter>
+            <Parameter name="R" unit="" default_value="(9.0e-6/w + 7.0*(b+1)*l + ( 1.081*(w+1.0e-8) + 0.18e-6)*b/(w+1.0e-8))/m" show="true">
+                <Description>Resistance</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="rppd" schematic_id = "R" show_name="true">
+        <Description>
+            SG13G2 polysilicon unsalicided resistor
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XR{PartCounter} {nets} rppd w={w} l={l} b={b} m={m}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Lumped_Component_Symbols/Resistor.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="0.5e-6" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="0.5e-6" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="m" unit="" default_value="1" show="true">
+                <Description>multiplier</Description>
+            </Parameter>
+            <Parameter name="b" unit="" default_value="0" show="true">
+                <Description>Number of bends</Description>
+            </Parameter>
+            <Parameter name="R" unit="" default_value="(9.0e-6/w + 7.0*(b+1)*l + ( 1.081*(w+1.0e-8) + 0.18e-6)*b/(w+1.0e-8))/m" show="true">
+                <Description>Resistance</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="rhigh" schematic_id = "R" show_name="true">
+        <Description>
+            SG13G2 polysilicon high sheet resistance resistor
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XR{PartCounter} {nets} rhigh w={w} l={l} b={b} m={m}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Lumped_Component_Symbols/Resistor.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="0.5e-6" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="0.5e-6" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="m" unit="" default_value="1" show="true">
+                <Description>multiplier</Description>
+            </Parameter>
+            <Parameter name="b" unit="" default_value="0" show="true">
+                <Description>Number of bends</Description>
+            </Parameter>
+            <Parameter name="R" unit="" default_value="(9.0e-6/w + 7.0*(b+1)*l + ( 1.081*(w+1.0e-8) + 0.18e-6)*b/(w+1.0e-8))/m" show="true">
+                <Description>Resistance</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="Cmim" schematic_id = "C" show_name="true">
+        <Description>
+            SG13G2 MiM capacitor
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XC{PartCounter} {nets} cmim w={w} l={l} m={m}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Lumped_Component_Symbols/Capacitor.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="w" unit="um" default_value="10.0e-6" show="true">
+                <Description>Width</Description>
+            </Parameter>
+            <Parameter name="l" unit="um" default_value="10.0e-6" show="true">
+                <Description>Length</Description>
+            </Parameter>
+            <Parameter name="m" unit="" default_value="1" show="true">
+                <Description>multiplier</Description>
+            </Parameter>
+            <Parameter name="C" unit="" default_value="( w*l*1.5e-3 + 2*(w+l)*40e-12)*m" show="true">
+                <Description>Capacitance</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="npn13G2" schematic_id = "Q" show_name="true">
+        <Description>
+            SG13G2 basic HBT npn transistor 
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XQ{PartCounter} {nets} npn13G2 Nx={Nx}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Nonlinear_Components_Symbols/BJT.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="Nx" unit="" default_value="1" show="true">
+                <Description>Number of emitters</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="npn13G2l" schematic_id = "Q" show_name="true">
+        <Description>
+            SG13G2 variable emitter length HBT npn transistor 
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XQ{PartCounter} {nets} npn13G2l Nx={Nx} El={El}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Nonlinear_Components_Symbols/BJT.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="Nx" unit="" default_value="1" show="true">
+                <Description>Number of emitters</Description>
+            </Parameter>
+            <Parameter name="El" unit="" default_value="1.0" show="true">
+                <Description>Emitter length</Description>
+            </Parameter>
+        </Parameters>
+    </Component>
+    <Component name="npn13G2v" schematic_id = "Q" show_name="true">
+        <Description>
+            SG13G2 high power HBT npn transistor 
+        </Description>
+        <Netlists>
+            <NgspiceNetlist value = 'XQ{PartCounter} {nets} npn13G2v Nx={Nx} El={El}'>
+            </NgspiceNetlist>
+        </Netlists>
+        <Symbols>
+            <Symbol id="Standard" type="external"> <!-- Defined in a separate file -->
+               <File>{QUCS_S_COMPONENTS_LIBRARY}/Nonlinear_Components_Symbols/BJT.sym</File>
+           </Symbol>
+        </Symbols>
+        <Parameters>
+            <Parameter name="Nx" unit="" default_value="1" show="true">
+                <Description>Number of emitters</Description>
+            </Parameter>
+            <Parameter name="El" unit="" default_value="1.0" show="true">
+                <Description>Emitter length</Description>
             </Parameter>
         </Parameters>
     </Component>

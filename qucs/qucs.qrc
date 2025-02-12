@@ -114,6 +114,7 @@
         <file>Libraries/IHP-Open-PDK.xml</file>
         <file>Libraries/Lumped_Component_Symbols/Resistor.sym</file>
         <file>Libraries/Lumped_Component_Symbols/Capacitor.sym</file>
+        <file>Libraries/Nonlinear_Components_Symbols/BJT.sym</file>
         <file>Libraries/Nonlinear_Components_Symbols/NMOS.sym</file>
         <file>Libraries/Nonlinear_Components_Symbols/PMOS.sym</file>
         <file>Libraries/Nonlinear_Components_Symbols/NPN.sym</file>
